@@ -1,11 +1,12 @@
 "use client"
 import { useState, ChangeEvent, useEffect, SetStateAction } from "react";
-import { useRouter } from "next/router";
+import { useRouter } from "next/navigation";
 
 const Search=()=>{
     const [search, setSearch] = useState('');
     const [history, setHistory] = useState<String []>([]);
     const [historyOn, setHistoryOn] = useState(false);
+    const router = useRouter();
 
     //This function get the value(string) from the local storage, and add into the searchhistory list.
     const addSearchHistory=()=>{  
@@ -21,26 +22,30 @@ const Search=()=>{
     }
     //adding entered value into localstorage
     const handleSubmit = (value: String) => {
-        setHistory([...history, value])
+        if (history.includes(value)) {
+            return;
+        }
+        const updatedHistory = [...history, value];
+        localStorage.setItem("riotID", JSON.stringify(updatedHistory));
+        setHistory(updatedHistory);
+        router.push(`/profile/${value}`)
     }
 
     useEffect(() => {
         addSearchHistory();
     },[])
-
-    useEffect (() =>{
-        localStorage.setItem("riotID",JSON.stringify(history))
-    }, [history])
+    
 
     //This is a function for triggering to search by press enter key
-    const handleKeyPress = (e) => {
+    const handleKeyPress = (e : any) => {
         console.log(e)
         if (e.key == 'Enter'){
             console.log("perfect")
             console.log(e.key)
             handleSubmit(e.target.value)
         }
-    }
+    };
+
 
     return(
         <div>
@@ -48,7 +53,7 @@ const Search=()=>{
         onFocus={()=> setHistoryOn(true)}
         onBlur={()=> setHistoryOn(false)}
         onChange={(e)=>setSearch(e.target.value)}
-        onKeyDown={(e)=>{handleKeyPress(e);}}>
+        onKeyDown={handleKeyPress}>
         
         </input>
         <div>{historyOn && historyList()}</div>
