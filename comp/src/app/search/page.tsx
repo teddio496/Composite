@@ -18,14 +18,17 @@ const Search=()=>{
         console.log(history)
         console.log(!history)
         if (history.length === 0) return <div>No history</div>
-        else return <ul>{history.map((name, index) => <li key={index}>{name}</li>)}</ul>
+        else return <ul>{history.map((name, index) => <li 
+                            onMouseDown={()=> router.push(`/profile/${name}`)} key={index}>
+                                <div className="bg-blue">{name}</div></li>)}</ul>
     }
     //adding entered value into localstorage
     const handleSubmit = (value: String) => {
         if (history.includes(value)) {
+            router.push(`/profile/${value}`)
             return;
         }
-        const updatedHistory = [...history, value];
+        const updatedHistory = [value, ...history];
         localStorage.setItem("riotID", JSON.stringify(updatedHistory));
         setHistory(updatedHistory);
         router.push(`/profile/${value}`)
@@ -51,7 +54,7 @@ const Search=()=>{
         <div>
         <input 
         onFocus={()=> setHistoryOn(true)}
-        onBlur={()=> setHistoryOn(false)}
+        onBlur={() => setHistoryOn(false)}
         onChange={(e)=>setSearch(e.target.value)}
         onKeyDown={handleKeyPress}>
         
