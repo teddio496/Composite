@@ -1,0 +1,24 @@
+datasource db {
+    provider = "postgresql"
+    url = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+    puuid     String  @id
+    gameName  String
+    gameTag   String
+    icon      String
+    matches   Match[]
+    
+    @@unique([gameName, gameTag])
+}
+
+model Match {
+    matchId  String   @id
+    tempData Json
+    players  User[]
+}
